@@ -1,9 +1,9 @@
 # Automated-Tests-With-Selenium
-# 🔍 Keyword Search Page
+# Keyword Search Page
 
-A simple, static HTML page that allows users to search through a list of 50 products by keyword. Matching products are highlighted and counted in real time.
+A simple, static HTML page that allows users to search through a list of products by keyword. Matching products are highlighted and counted in real time.
 
-## 🚀 Features
+## Features
 
 - Static product list (no backend needed)
 - Case-insensitive keyword search
@@ -12,7 +12,7 @@ A simple, static HTML page that allows users to search through a list of 50 prod
 - Search triggered via button or Enter key
 - Accessible and mobile-friendly UI
 
-## 🧪 UI Tests with Selenium
+## UI Tests with Selenium
 
 Automated tests cover key functionality, including:
 
@@ -25,4 +25,6 @@ Automated tests cover key functionality, including:
 ### Run tests locally
 
 1. Install dependencies:
-   pip install selenium
+   ```pip install selenium```
+2. Ryn python script:
+   ```python Automated_Tests.py```
