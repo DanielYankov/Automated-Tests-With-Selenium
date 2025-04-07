@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keyword Search</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 50px;
+      background-color: #f0f0f0;
+    }
+    input[type="text"] {
+      padding: 10px;
+      width: 300px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #results {
+      margin-top: 20px;
+      width: 80%;
+      max-width: 800px;
+    }
+    .product {
+      background: white;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .product h3 {
+      margin: 0 0 5px;
+    }
+    .product p {
+      margin: 0;
+    }
+    .highlight {
+      background-color: yellow;
+    }
+    #count {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Search Products</h1>
+  <div>
+    <input type="text" id="searchInput" placeholder="Enter keyword..." aria-label="Keyword input">
+    <button id="searchBtn" onclick="searchKeyword()">Search</button>
+    <button id="clearBtn" onclick="clearSearch()">Clear</button>
+  </div>
+  <div id="count"></div>
+  <div id="results" role="list"></div>
+
+  <script>
+    const products = [
+      { name: 'Wireless Mouse', description: 'A smooth and fast wireless mouse.' },
+      { name: 'Bluetooth Headphones', description: 'High quality sound and comfort.' },
+      { name: 'USB-C Charger', description: 'Fast charging for your devices.' },
+      { name: 'Laptop Stand', description: 'Ergonomic stand for laptops of all sizes.' },
+      { name: 'Portable SSD', description: 'Fast and reliable external storage.' },
+      { name: 'Mechanical Keyboard', description: 'Responsive and customizable mechanical keyboard.' },
+      { name: 'Webcam 1080p', description: 'Crystal clear video for meetings and streaming.' },
+      { name: 'Gaming Chair', description: 'Comfort and support for long gaming sessions.' },
+      { name: 'Noise Cancelling Earbuds', description: 'Block out the noise, enjoy your music.' },
+      { name: 'Smartwatch', description: 'Track fitness, notifications, and more.' },
+      { name: 'LED Monitor', description: 'Sharp and vibrant display for work and play.' },
+      { name: 'External Hard Drive', description: 'Dependable backup and file storage.' },
+      { name: 'Graphics Tablet', description: 'Perfect for digital artists and designers.' },
+      { name: 'Smart Light Bulb', description: 'Change colors and control with your phone.' },
+      { name: 'Action Camera', description: 'Capture your adventures in high definition.' },
+      { name: 'Drone with Camera', description: 'Stunning aerial footage with 4K resolution.' },
+      { name: 'Wireless Router', description: 'Fast and stable internet connection for your home.' },
+      { name: 'VR Headset', description: 'Immersive gaming and virtual reality experiences.' },
+      { name: 'Electric Scooter', description: 'Eco-friendly urban commuting solution.' },
+      { name: 'Fitness Tracker', description: 'Monitor your health and activity levels.' },
+      { name: 'Portable Bluetooth Speaker', description: 'Take your music anywhere with great sound.' },
+      { name: 'Smart Thermostat', description: 'Control your home temperature remotely.' },
+      { name: 'E-Reader', description: 'Read your favorite books with e-ink display.' },
+      { name: 'Streaming Stick', description: 'Turn your TV into a smart streaming center.' },
+      { name: '3D Printer', description: 'Print custom objects from digital designs.' },
+      { name: 'Robot Vacuum', description: 'Hands-free cleaning for any floor type.' },
+      { name: 'Smart Doorbell', description: 'Know who’s at the door from anywhere.' },
+      { name: 'Electric Toothbrush', description: 'Advanced cleaning for your teeth.' },
+      { name: 'Home Security Camera', description: 'Monitor your property 24/7.' },
+      { name: 'Digital Photo Frame', description: 'Display your favorite memories.' },
+      { name: 'Smart Plug', description: 'Control devices via voice or app.' },
+      { name: 'Indoor Garden Kit', description: 'Grow fresh herbs indoors all year long.' },
+      { name: 'Wireless Charging Pad', description: 'Charge your devices without cables.' },
+      { name: 'Electric Kettle', description: 'Boil water quickly and safely.' },
+      { name: 'Smart Coffee Maker', description: 'Schedule and brew remotely.' },
+      { name: 'Mini Projector', description: 'Portable cinema anywhere.' },
+      { name: 'Noise Meter', description: 'Measure sound levels around you.' },
+      { name: 'Car Dash Cam', description: 'Record the road ahead for safety.' },
+      { name: 'Temperature Sensor', description: 'Keep track of ambient temperature.' },
+      { name: 'Fingerprint Lock', description: 'Secure and keyless door access.' },
+      { name: 'LED Strip Lights', description: 'Colorful lighting for your space.' },
+      { name: 'Smart Scale', description: 'Track weight and body metrics.' },
+      { name: 'Tablet Stand', description: 'Perfect for reading or video calls.' },
+      { name: 'Air Purifier', description: 'Clean and fresh indoor air.' },
+      { name: 'Pet Feeder', description: 'Automatic feeding system for pets.' },
+      { name: 'Bike Computer', description: 'Track your rides and stats.' },
+      { name: 'HDMI Switch', description: 'Easily switch between HDMI inputs.' },
+      { name: 'USB Hub', description: 'Expand your computer’s USB ports.' },
+      { name: 'Photo Scanner', description: 'Digitize your old photographs.' },
+      { name: 'Phone Gimbal', description: 'Stabilize your smartphone videos.' }
+    ];
+
+    function highlight(text, keyword) {
+      const regex = new RegExp(`(${keyword})`, 'gi');
+      return text.replace(regex, '<span class="highlight">$1</span>');
+    }
+
+    function searchKeyword() {
+      const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+      const results = document.getElementById('results');
+      const count = document.getElementById('count');
+      results.innerHTML = '';
+      count.innerHTML = '';
+
+      if (keyword === '') {
+        results.innerHTML = '<p>Please enter a keyword.</p>';
+        return;
+      }
+
+      const filteredProducts = products.filter(product =>
+        product.name.toLowerCase().includes(keyword) ||
+        product.description.toLowerCase().includes(keyword)
+      );
+
+      if (filteredProducts.length === 0) {
+        results.innerHTML = '<p>No products found matching your keyword.</p>';
+        return;
+      }
+
+      count.innerHTML = `Found ${filteredProducts.length} product(s)`;
+
+      filteredProducts.forEach(product => {
+        const productDiv = document.createElement('div');
+        productDiv.className = 'product';
+        productDiv.setAttribute('role', 'listitem');
+        productDiv.innerHTML = `
+          <h3>${highlight(product.name, keyword)}</h3>
+          <p>${highlight(product.description, keyword)}</p>
+        `;
+        results.appendChild(productDiv);
+      });
+    }
+
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('results').innerHTML = '';
+      document.getElementById('count').innerHTML = '';
+    }
+
+    document.getElementById('searchInput').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        searchKeyword();
+      }
+    });
+  </script>
+</body>
+</html>
